@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 classes for models, e.g. Particle
 
@@ -14,13 +13,14 @@ import numpy as np
 import time
 import threading
 
+
 class Particle(object):
     def __init__(self, x, y, radius=1.0, color=None):
         self._x = x
         self._y = y
         self._r = radius
         if color is None:
-            self._color = wx.Colour(0,0,255,200)
+            self._color = wx.Colour(0, 0, 255, 200)
         else:
             self._color = color
 
@@ -69,6 +69,7 @@ class Particle(object):
             c = '#' + ''.join([random.choice(alp) for i in range(6)])
             return c
 
+
 class Simulator(object):
     def __init__(self, parent, particles, buffer, color):
         """ input all defined particles
@@ -99,25 +100,28 @@ class Simulator(object):
             dc.Clear()
             self.pframe.Refresh(False)
 
+
 class RandomWalker(Simulator):
     def __init__(self, parent, particles, buffer, color, steps=10, dt=0.05):
         Simulator.__init__(self, parent, particles, buffer, color)
-        self.steps  = steps
-        self.dt     = dt
+        self.steps = steps
+        self.dt = dt
 
         p0 = converge_particle = random.choice(self.particles)
         other_particles = [p for p in self.particles if p != p0]
-        self.delx = [1./random.randint(1,steps)*(p0.x-pi.x) for pi in other_particles]
-        self.dely = [1./random.randint(1,steps)*(p0.y-pi.y) for pi in other_particles]
+        self.delx = [1. / random.randint(1, steps) * (p0.x - pi.x)
+                     for pi in other_particles]
+        self.dely = [1. / random.randint(1, steps) * (p0.y - pi.y)
+                     for pi in other_particles]
         self.other_particles = other_particles
 
         self.mode = random.choice(['cop', 'dop', 'col1', 'col2'])
         self.move_func = {
-                          'cop' : self._move_cop,
-                          'dop' : self._move_dop,
-                          'col1': self._move_col1,
-                          'col2': self._move_col2
-                         }
+            'cop': self._move_cop,
+            'dop': self._move_dop,
+            'col1': self._move_col1,
+            'col2': self._move_col2
+        }
 
     def move(self, n=None):
         self.move_func[self.mode]()
@@ -142,6 +146,7 @@ class RandomWalker(Simulator):
             p.x += self.delx[idx]
             p.y -= self.dely[idx]
 
+
 class WorkerThread(threading.Thread):
     def __init__(self, model):
         threading.Thread.__init__(self)
@@ -152,7 +157,7 @@ class WorkerThread(threading.Thread):
 
     def stop(self):
         self.stopflag.set()
-    
+
     def run(self):
         for i in range(self.model.steps):
             if self.stopflag.isSet():
@@ -160,29 +165,33 @@ class WorkerThread(threading.Thread):
             self.model.move(i)
             wx.CallAfter(self.model.clear, self.model.show_trace)
             wx.CallAfter(self.model.draw)
-            time.sleep(self.model.dt/1000.0)
+            time.sleep(self.model.dt / 1000.0)
+
 
 class RobotDrawer(Simulator):
     def __init__(self, parent, particles, buffer, color, steps=10, dt=0.05):
         Simulator.__init__(self, parent, particles, buffer, color)
         self.steps = steps
-        self.dt    = dt
+        self.dt = dt
         self.gen_rot_center()
-    
+
     def gen_rot_center(self):
-        r_np = np.array([p.r*random.choice(range(2,15)) for p in self.particles])
-        theta_np = np.random.choice(np.linspace(0, 2*np.pi, 180), r_np.size)
+        r_np = np.array([p.r * random.choice(range(2, 15))
+                         for p in self.particles])
+        theta_np = np.random.choice(np.linspace(0, 2 * np.pi, 180), r_np.size)
         cos, sin = np.cos, np.sin
-        self.omega = 2*np.pi/(np.random.choice(range(10, self.steps), r_np.size))
-        self.r     = r_np
+        self.omega = 2 * np.pi / (np.random.choice(
+            range(10, self.steps), r_np.size))
+        self.r = r_np
         self.theta = theta_np
-        self.r_omega = self.r * self.omega
         self.r_omega = self.r * self.omega
 
     def move(self, n=None):
         for i, p in enumerate(self.particles):
-            p.x += self.r_omega[i] * np.sin((self.theta[i] - self.omega[i] * n))
-            p.y -= self.r_omega[i] * np.cos((self.theta[i] - self.omega[i] * n))
+            p.x += self.r_omega[i] * np.sin((self.theta[i] - self.omega[i] * n
+                                             ))
+            p.y -= self.r_omega[i] * np.cos((self.theta[i] - self.omega[i] * n
+                                             ))
 
     def draw(self):
         dc = wx.MemoryDC()
@@ -192,6 +201,3 @@ class RobotDrawer(Simulator):
             dc.SetBrush(wx.Brush(p.color))
             dc.DrawCircle(int(p.x), int(p.y), p.r)
         self.pframe.Refresh(False)
-
-
-

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """ Drawing application for fun.
 
     Tong Zhang
@@ -12,18 +11,19 @@ import random
 import models
 import time
 
+
 class DrawFrame(wx.Frame):
     def __init__(self, parent, id, title):
         wx.Frame.__init__(self, parent, id, title)
-        
+
         self.mode_list = ['Random Walker', 'Robot Drawer']
         self.mode = self.mode_list[0]
         self.paint_modes = {
-                            'Random Walker': self._drawCircles,
-                            'Robot Drawer' : self._drawRobot,
-                           }
-        self.fmt='%Y-%m-%d %H:%M:%S %Z'
-        self.npart = 2000
+            'Random Walker': self._drawCircles,
+            'Robot Drawer': self._drawRobot,
+        }
+        self.fmt = '%Y-%m-%d %H:%M:%S %Z'
+        self.npart = 1000
         self.stop_ms = 50  # 50 millisecond
         self.show_trace = False
 
@@ -42,50 +42,58 @@ class DrawFrame(wx.Frame):
         sb = wx.StaticBox(self, label='Drawing Canvas', style=wx.ALIGN_CENTER)
         sbs = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
-        draw_btn  = wx.Button(self, label='&Draw')
+        draw_btn = wx.Button(self, label='&Draw')
         start_btn = wx.Button(self, label='&Start')
-        stop_btn  = wx.Button(self, label='Sto&p')
-        exit_btn  = wx.Button(self, label='&Exit')
+        stop_btn = wx.Button(self, label='Sto&p')
+        exit_btn = wx.Button(self, label='&Exit')
         about_btn = wx.Button(self, label='&About')
         clear_btn = wx.Button(self, label='&Clear')
 
-        mode_cb = wx.ComboBox(self, value=self.mode_list[0], 
-                    choices=self.mode_list, style=wx.CB_READONLY)
+        mode_cb = wx.ComboBox(self,
+                              value=self.mode_list[0],
+                              choices=self.mode_list,
+                              style=wx.CB_READONLY)
         npart_st = wx.StaticText(self, label=u'Particle Number')
-        npart_tc = wx.TextCtrl(self, value=str(self.npart), style=wx.TE_PROCESS_ENTER)
+        npart_tc = wx.TextCtrl(self,
+                               value=str(self.npart),
+                               style=wx.TE_PROCESS_ENTER)
         trace_ck = wx.CheckBox(self, label=u'Trace')
         speed_st = wx.StaticText(self, label=u'Speed')
         speed_sp = wx.SpinCtrl(self, value='20', min=1, max=100, initial=20)
         fract_st = wx.StaticText(self, label=u'Shape')
-        fract_cb = wx.ComboBox(self, value=u'Circle', choices=['Circle','Koch'],
+        fract_cb = wx.ComboBox(self,
+                               value=u'Circle',
+                               choices=['Circle', 'Koch'],
                                style=wx.CB_READONLY)
-        self.npart_st  = npart_st
-        self.npart_tc  = npart_tc
-        self.trace_ck  = trace_ck
-        self.speed_sp  = speed_sp
+        self.npart_st = npart_st
+        self.npart_tc = npart_tc
+        self.trace_ck = trace_ck
+        self.speed_sp = speed_sp
         self.start_btn = start_btn
-        self.draw_btn  = draw_btn
-        self.fract_cb  = fract_cb
-        self.fract_st  = fract_st
+        self.draw_btn = draw_btn
+        self.fract_cb = fract_cb
+        self.fract_st = fract_st
         self.fract_cb.Hide()
         self.fract_st.Hide()
-        
+
         self.hbox1 = hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox1.Add(mode_cb,  0, wx.TOP | wx.BOTTOM, 6)
-        hbox1.Add(npart_st, 0, wx.TOP | wx.BOTTOM | wx.LEFT | wx.ALIGN_CENTER, 6)
+        hbox1.Add(mode_cb, 0, wx.TOP | wx.BOTTOM, 6)
+        hbox1.Add(npart_st, 0, wx.TOP | wx.BOTTOM | wx.LEFT | wx.ALIGN_CENTER,
+                  6)
         hbox1.Add(npart_tc, 0, wx.LEFT | wx.ALIGN_CENTER, 6)
-        hbox1.Add(fract_st, 0, wx.TOP | wx.BOTTOM | wx.LEFT | wx.ALIGN_CENTER, 6)
+        hbox1.Add(fract_st, 0, wx.TOP | wx.BOTTOM | wx.LEFT | wx.ALIGN_CENTER,
+                  6)
         hbox1.Add(fract_cb, 0, wx.LEFT | wx.ALIGN_CENTER, 6)
         hbox1.Add(trace_ck, 0, wx.LEFT | wx.ALIGN_CENTER, 10)
         hbox1.Add(speed_st, 0, wx.LEFT | wx.ALIGN_CENTER, 10)
         hbox1.Add(speed_sp, 0, wx.LEFT | wx.RIGHT | wx.ALIGN_CENTER, 6)
-        
+
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox2.Add(draw_btn,  0, wx.TOP | wx.BOTTOM, 6)
+        hbox2.Add(draw_btn, 0, wx.TOP | wx.BOTTOM, 6)
         hbox2.Add(start_btn, 0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
-        hbox2.Add(stop_btn,  0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
+        hbox2.Add(stop_btn, 0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
         hbox2.Add(clear_btn, 0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
-        hbox2.Add(exit_btn,  0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
+        hbox2.Add(exit_btn, 0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
         hbox2.Add(about_btn, 0, wx.TOP | wx.BOTTOM | wx.LEFT, 6)
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -96,56 +104,60 @@ class DrawFrame(wx.Frame):
         self.panel.SetBackgroundColour('#EDECEB')
         self.color = self.panel.GetBackgroundColour()
         sbs.Add(self.panel, 1, wx.EXPAND)
-        
+
         title_st = wx.StaticText(self, label=u'Welcome to Game World!')
         font = title_st.GetFont()
         font.SetPointSize(20)
         font.SetWeight(wx.FONTWEIGHT_BOLD)
         font.SetFaceName('Comic Sans MS')
         title_st.SetFont(font)
-        title_st.SetForegroundColour(models.Particle.gen_rand_color(mode='hex'))
-        self.time_now_st = wx.StaticText(self, label=time.strftime(self.fmt, time.localtime()))
+        title_st.SetForegroundColour(models.Particle.gen_rand_color(
+            mode='hex'))
+        self.time_now_st = wx.StaticText(
+            self, label=time.strftime(self.fmt, time.localtime()))
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(title_st,         0, wx.ALIGN_CENTER | wx.TOP, 5)
+        vbox.Add(title_st, 0, wx.ALIGN_CENTER | wx.TOP, 5)
         vbox.Add(self.time_now_st, 0, wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 5)
-        vbox.Add(sbs,  4, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        vbox.Add(sbs, 4, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         vbox.Add(hbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self.SetSizer(vbox)
 
-        self.Bind(wx.EVT_BUTTON,     self.onExit,       exit_btn )
-        self.Bind(wx.EVT_BUTTON,     self.onDraw,       draw_btn )
-        self.Bind(wx.EVT_BUTTON,     self.onStart,      start_btn)
-        self.Bind(wx.EVT_BUTTON,     self.onStop,       stop_btn )
-        self.Bind(wx.EVT_BUTTON,     self.onClear,      clear_btn)
-        self.Bind(wx.EVT_BUTTON,     self.onAbout,      about_btn)
-        self.Bind(wx.EVT_COMBOBOX,   self.onChooseMode, mode_cb  )
-        self.Bind(wx.EVT_TEXT_ENTER, self.onEnterN,     npart_tc )
-        self.Bind(wx.EVT_CHECKBOX,   self.onTraceBool,  trace_ck )
-        self.Bind(wx.EVT_SPINCTRL,   self.onSpeed,      speed_sp )
+        self.Bind(wx.EVT_BUTTON, self.onExit, exit_btn)
+        self.Bind(wx.EVT_BUTTON, self.onDraw, draw_btn)
+        self.Bind(wx.EVT_BUTTON, self.onStart, start_btn)
+        self.Bind(wx.EVT_BUTTON, self.onStop, stop_btn)
+        self.Bind(wx.EVT_BUTTON, self.onClear, clear_btn)
+        self.Bind(wx.EVT_BUTTON, self.onAbout, about_btn)
+        self.Bind(wx.EVT_COMBOBOX, self.onChooseMode, mode_cb)
+        self.Bind(wx.EVT_TEXT_ENTER, self.onEnterN, npart_tc)
+        self.Bind(wx.EVT_CHECKBOX, self.onTraceBool, trace_ck)
+        self.Bind(wx.EVT_SPINCTRL, self.onSpeed, speed_sp)
 
         self.Bind(wx.EVT_PAINT, self.onPaint)
-        self.Bind(wx.EVT_SIZE,  self.onSize)
-        self.Bind(wx.EVT_IDLE,  self.onIdle)
+        self.Bind(wx.EVT_SIZE, self.onSize)
+        self.Bind(wx.EVT_IDLE, self.onIdle)
 
     def onAbout(self, e):
-        dlg = wx.MessageDialog(self, "This app is created just for fun\n(Tong Zhang, May. 2016)", 
-                caption='About This App', 
-                style=wx.OK | wx.CANCEL | wx.ICON_INFORMATION | wx.CENTER)
+        dlg = wx.MessageDialog(
+            self,
+            "This app is created just for fun\n(Tong Zhang, May. 2016)",
+            caption='About This App',
+            style=wx.OK | wx.CANCEL | wx.ICON_INFORMATION | wx.CENTER)
         if dlg.ShowModal() == wx.OK:
             dlg.Destroy()
         else:
             img = self.buffer.ConvertToImage()
             img.SaveFile('pic.png', wx.BITMAP_TYPE_PNG)
-    
+
     def onSpeed(self, e):
-        self.stop_ms = 1000.0/int(self.speed_sp.GetValue())
+        self.stop_ms = 1000.0 / int(self.speed_sp.GetValue())
 
     def onEnterN(self, e):
         self.npart = int(self.npart_tc.GetValue())
         self.initBuffer()
         self.draw()
-    
+
     def onTraceBool(self, e):
         if e.GetEventObject().IsChecked():
             self.show_trace = True
@@ -166,7 +178,7 @@ class DrawFrame(wx.Frame):
         else:
             #self.draw_btn.Show()
             self.npart_st.SetLabel('Particle Number')
-            self.npart = 2000
+            self.npart = 1000
             self.npart_tc.SetValue(str(self.npart))
             self.trace_ck.Show()
             self.fract_cb.Hide()
@@ -184,14 +196,16 @@ class DrawFrame(wx.Frame):
         self.Refresh(False)
 
     def onExit(self, e):
-        dlg = wx.MessageDialog(self, 'Go back to play?', caption='Exit Warning',
+        dlg = wx.MessageDialog(self,
+                               'Go back to play?',
+                               caption='Exit Warning',
                                style=wx.YES_NO | wx.ICON_QUESTION | wx.CENTER)
         if dlg.ShowModal() == wx.ID_NO:
             self.Destroy()
 
     def onStart(self, e):
         self.paint()
-        
+
     def onStop(self, e):
         try:
             self.randomModel_worker.stop()
@@ -211,7 +225,7 @@ class DrawFrame(wx.Frame):
     def onSize(self, e):
         self.Layout()
         self.reInitBuffer = True
-    
+
     def onPaint(self, event):
         dc = wx.BufferedPaintDC(self.panel, self.buffer)
 
@@ -229,9 +243,9 @@ class DrawFrame(wx.Frame):
         particles = []
         for i in range(self.npart):
             w, h = self.GetClientSize()
-            x = random.randint(1, w-1)
-            y = random.randint(1, h-1)
-            rho = random.random()*10
+            x = random.randint(1, w - 1)
+            y = random.randint(1, h - 1)
+            rho = random.random() * 10
             p = models.Particle(x, y, radius=rho)
             p.color = models.Particle.gen_rand_color(alpha=200)
             particles.append(p)
@@ -242,17 +256,20 @@ class DrawFrame(wx.Frame):
         self.paint_modes[self.mode]()
 
     def _drawCircles(self):
-        randomModel = models.RandomWalker(self, self.particles, self.buffer, self.color, 200, self.stop_ms)
+        randomModel = models.RandomWalker(self, self.particles, self.buffer,
+                                          self.color, 200, self.stop_ms)
         self.randomModel_worker = models.WorkerThread(randomModel)
         self.randomModel_worker.start()
 
     def _drawRobot(self):
         self.clear()
         self.show_trace = True
-        robotModel = models.RobotDrawer(self, self.particles, self.buffer, self.color, 200, self.stop_ms)
+        robotModel = models.RobotDrawer(self, self.particles, self.buffer,
+                                        self.color, 200, self.stop_ms)
         self.robotModel_worker = models.WorkerThread(robotModel)
         self.robotModel_worker.start()
-       
+
+
 def run():
     app = wx.App()
     drawFrame = DrawFrame(None, -1, 'Drawing Game')
@@ -262,6 +279,6 @@ def run():
     drawFrame.Show()
     app.MainLoop()
 
+
 if __name__ == '__main__':
     run()
-
