@@ -5,6 +5,10 @@ features and most importantly for fun.
 
 Window installer (may work or not) could be found: [pydraw.exe](/dist/pydraw.exe?raw=true)
 
+Install by pip: <code>pip install pydraw</code>
+
+Execute: <code>pydraw</code> to start the app.
+
 ### Features to be demonstrated:
 
 * Building GUI application from scratch;
