@@ -3,6 +3,8 @@
 A python GUI application developed for the demonstration of the following 
 features and most importantly for fun.
 
+Window installer (may work or not) could be found: [pydraw.exe](/dist/pydraw.exe?raw=true)
+
 ### Features to be demonstrated:
 
 * Building GUI application from scratch;
