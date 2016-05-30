@@ -274,8 +274,8 @@ def run():
     app = wx.App()
     drawFrame = DrawFrame(None, -1, 'Drawing Game')
     drawFrame.Center()
-    drawFrame.SetMinSize((1360, 768))
-    drawFrame.SetSize((1360, 1058))
+    drawFrame.SetMinSize((800, 600))
+    #drawFrame.SetSize((1360, 1058))
     drawFrame.Show()
     app.MainLoop()
 
